@@ -69,14 +69,14 @@ whitespace    = [ \n\t\r]
  * LEXICAL RULES:
  */
 read               { return newSym(sym.READ, "read"); }
-print		           { return newSym(sym.PRINT, "print"); }
+print		   { return newSym(sym.PRINT, "print"); }
 "*"                { return newSym(sym.TIMES, "*"); }
 "+"                { return newSym(sym.PLUS, "+"); }
 "-"                { return newSym(sym.MINUS, "-"); }
 "/"                { return newSym(sym.DIVIDE, "/"); }
 "="                { return newSym(sym.ASSMNT, "="); }
 ";"                { return newSym(sym.SEMI, ";"); }
-var		             { return newSym(sym.VAR, "var"); }
+var		   { return newSym(sym.VAR, "var"); }
 {id}               { return newSym(sym.ID, yytext()); }
 {intlit}           { return newSym(sym.INTLIT, new Integer(yytext())); }
 {inlinecomment}    { /* For this stand-alone lexer, print out comments. */}
