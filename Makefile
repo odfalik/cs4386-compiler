@@ -15,11 +15,11 @@ default: run
 FILE=		ExampleLexer.java      parser.java    sym.java \
 				ExampleLexerTest.java
 
-run: lexerTest.txt
+run: basicTerminals.txt
 
-lexerTest.txt: all
-		$(JAVA) -cp $(CP) ExampleLexerTest lexTest.txt > lexTest-output.txt
-		cat -n lexTest-output.txt
+basicTerminals.txt: all
+		$(JAVA) -cp $(CP) ExampleLexerTest basicTerminals.txt > out.txt
+		cat -n out.txt
 
 all: ExampleLexer.java parser.java $(FILE:java=class)
 

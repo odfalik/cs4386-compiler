@@ -1,24 +1,62 @@
-
 import java_cup.runtime.*;
 
-terminal READ;
-terminal PRINT;
-terminal TIMES;
-terminal PLUS;
-terminal MINUS;
-terminal DIVIDE;
-terminal SEMI;
-terminal EQ;
-terminal ASSMNT;
-
+terminal        CLASS, FINAL, VOID;
+terminal        INT, CHAR, BOOL, FLOAT;
+terminal        IF, ELSE, WHILE, READ, PRINT, PRINTLN, RETURN;
+terminal        PAREN_O, PAREN_C, BRACKET_O, BRACKET_C, CURLY_BRACKET_O, CURLY_BRACKET_C;
+terminal        SEMI, COMMA, QUESTION, COLON;
+terminal        ASSN;
+terminal        MULT, DIVIDE, PLUS, MINUS, LT, GT, LTE, GTE, EQ, NEQ, OR, AND, NOT;
+terminal        INC, DEC;
+terminal        TRUE, FALSE;
 terminal String VAR;
-
 terminal String ID;
-terminal int INTLIT;
+terminal int    INTLIT;
+terminal char   CHARLIT;
+terminal String STRLIT;
+terminal float  FLOATLIT;
+non terminal    Program, Memberdecls, Fielddecls, Methoddecls, Fielddecl, Optionalfinal, Optionalexpr, Methoddecl,
+                Optionalsemi, Returntype, Type, Argdecls, ArgdeclList, Argdecl, Stmts, Stmt, OptionalElse, Name,
+                Args, Readlist, Printlist, Printlinelist, Expr, Binaryop;
 
-/*
- * this dummy token is necessary, since at least one non-terminal is
- * required to run cup
- */
-non terminal dummy;
-dummy ::= ;
+Program        ::= CLASS ID CURLY_BRACKET_O CURLY_BRACKET_C;
+Memberdecls    ::= Fielddecls Methoddecls;
+Fielddecls     ::= Fielddecl Fielddecls | ;
+Methoddecls    ::= Methoddecl Methoddecls | ;
+Fielddecl      ::= Optionalfinal Type ID Optionalexpr
+                            | Type ID BRACKET_O INTLIT BRACKET_C;
+Optionalfinal  ::= FINAL | ;
+Optionalexpr   ::= EQ Expr | ;
+Methoddecl     ::= Returntype ID PAREN_O Argdecls PAREN_C CURLY_BRACKET_O Fielddecls Stmts CURLY_BRACKET_C Optionalsemi;
+Optionalsemi   ::= SEMI | ;
+Returntype     ::= Type | VOID;
+Type           ::= INT | CHAR | BOOL | FLOAT;
+Argdecls       ::= ArgdeclList | ;
+ArgdeclList    ::= Argdecl COMMA ArgdeclList | Argdecl;
+Argdecl        ::= Type ID | Type ID BRACKET_O BRACKET_C;
+Stmts          ::= Stmt Stmts | ;
+Stmt           ::= IF PAREN_O Expr PAREN_C Stmt OptionalElse
+                            | WHILE PAREN_O Expr PAREN_C Stmt
+                            | Name EQ Expr SEMI
+                            | READ PAREN_O Readlist PAREN_C SEMI
+                            | PRINT PAREN_O Printlist PAREN_C SEMI
+                            | PRINTLN PAREN_O Printlinelist PAREN_C SEMI
+                            | ID PAREN_O PAREN_C SEMI
+                            | ID PAREN_O Args PAREN_C SEMI
+                            | RETURN SEMI
+                            | RETURN Expr SEMI
+                            | Name INC | Name DEC
+                            | CURLY_BRACKET_O Fielddecls Stmts CURLY_BRACKET_C Optionalsemi;
+OptionalElse   ::= ELSE Stmt | ;
+Name           ::= ID | ID BRACKET_O Expr BRACKET_C;
+Args           ::= Expr COMMA Args | Expr;
+Readlist       ::= Name COMMA Readlist | Name;
+Printlist      ::= Expr COMMA Printlist | Expr;
+Printlinelist  ::= Printlist | ;
+Expr           ::= Name | ID PAREN_O PAREN_C | ID PAREN_O Args PAREN_C
+                            | INTLIT | CHARLIT | STRLIT | FLOATLIT | TRUE | FALSE
+                            | PAREN_O Expr PAREN_C | NOT Expr | MINUS Expr | PLUS Expr
+                            | PAREN_O Type PAREN_C Expr | Expr Binaryop Expr
+                            | PAREN_O Expr QUESTION Expr COLON Expr PAREN_C;
+Binaryop       ::= MULT | DIVIDE | PLUS | MINUS | LT | GT | LTE | GTE
+                            | EQ | NEQ | OR | AND;
