@@ -12,25 +12,25 @@ default: run
 .java.class:
 				$(JAVAC) -cp $(CP) $*.java
 
-FILE=		ExampleLexer.java      parser.java    sym.java \
-				ExampleLexerTest.java
+FILE=		Lexer.java      parser.java    sym.java \
+				LexerTest.java
 
 run: basicTerminals.txt
 
 basicTerminals.txt: all
-		$(JAVA) -cp $(CP) ExampleLexerTest basicTerminals.txt > out.txt
+		$(JAVA) -cp $(CP) LexerTest basicTerminals.txt > out.txt
 		cat -n out.txt
 
-all: ExampleLexer.java parser.java $(FILE:java=class)
+all: Lexer.java parser.java $(FILE:java=class)
 
 clean:
-		rm -f *.class *~ *.bak ExampleLexer.java parser.java sym.java
+		rm -f *.class *~ *.bak Lexer.java parser.java sym.java
 
-ExampleLexer.java: exampleGrammar.jflex
-		$(JFLEX) exampleGrammar.jflex
+Lexer.java: Grammar.jflex
+		$(JFLEX) Grammar.jflex
 
-parser.java: exampleTokens.cup
-		$(CUP) -interface < exampleTokens.cup
+parser.java: Grammar.cup
+		$(CUP) -interface < Grammar.cup
 
-parserD.java: exampleTokens.cup
-		$(CUP) -interface -dump < exampleTokens.cup
+parserD.java: Grammar.cup
+		$(CUP) -interface -dump < Grammar.cup
