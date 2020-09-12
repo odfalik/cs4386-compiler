@@ -9,24 +9,40 @@ terminal        ASSN;
 terminal        MULT, DIVIDE, PLUS, MINUS, LT, GT, LTE, GTE, EQ, NEQ, OR, AND, NOT;
 terminal        INC, DEC;
 terminal        TRUE, FALSE;
-terminal String VAR, ID;
+terminal String ID;
 terminal int    INTLIT;
 terminal char   CHARLIT;
 terminal String STRLIT;
 terminal float  FLOATLIT;
 
+
 non terminal    Program, Memberdecls, Fielddecls, Methoddecls, Fielddecl, Optionalfinal, Optionalexpr, Methoddecl,
                 Optionalsemi, Returntype, Type, Argdecls, ArgdeclList, Argdecl, Stmts, Stmt, OptionalElse, Name,
                 Args, Readlist, Printlist, Printlinelist, Expr, Binaryop;
 
-Program         ::= CLASS ID CURLY_BRACKET_O CURLY_BRACKET_C;
+
+precedence left ASSN;
+precedence left QUESTION, COLON;
+precedence left OR;
+precedence left AND;
+precedence left EQ, NEQ;
+precedence left LT, LTE, GT, GTE;
+precedence left PLUS, MINUS, MULT, DIVIDE;
+precedence left PAREN_O, PAREN_C;
+
+precedence left OR, AND;
+precedence left INC, DEC;
+
+start with Program;
+
+Program         ::= CLASS ID CURLY_BRACKET_O Memberdecls CURLY_BRACKET_C;
 Memberdecls     ::= Fielddecls Methoddecls;
 Fielddecls      ::= Fielddecl Fielddecls | ;
 Methoddecls     ::= Methoddecl Methoddecls | ;
-Fielddecl       ::= Optionalfinal Type ID Optionalexpr
-                | Type ID BRACKET_O INTLIT BRACKET_C;
+Fielddecl       ::= Optionalfinal Type ID Optionalexpr SEMI
+                | Type ID BRACKET_O INTLIT BRACKET_C SEMI;
 Optionalfinal   ::= FINAL | ;
-Optionalexpr    ::= EQ Expr | ;
+Optionalexpr    ::= ASSN Expr | ;
 Methoddecl      ::= Returntype ID PAREN_O Argdecls PAREN_C CURLY_BRACKET_O Fielddecls Stmts CURLY_BRACKET_C Optionalsemi;
 Optionalsemi    ::= SEMI | ;
 Returntype      ::= Type | VOID;
@@ -37,7 +53,7 @@ Argdecl         ::= Type ID | Type ID BRACKET_O BRACKET_C;
 Stmts           ::= Stmt Stmts | ;
 Stmt            ::= IF PAREN_O Expr PAREN_C Stmt OptionalElse
                 | WHILE PAREN_O Expr PAREN_C Stmt
-                | Name EQ Expr SEMI
+                | Name ASSN Expr SEMI
                 | READ PAREN_O Readlist PAREN_C SEMI
                 | PRINT PAREN_O Printlist PAREN_C SEMI
                 | PRINTLN PAREN_O Printlinelist PAREN_C SEMI
