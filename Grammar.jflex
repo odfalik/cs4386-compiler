@@ -1,11 +1,8 @@
 import java_cup.runtime.*;
 
-
 %%
-/*-*
- * LEXICAL FUNCTIONS:
- */
 
+%public
 %cup
 %line
 %column
@@ -13,30 +10,16 @@ import java_cup.runtime.*;
 %class Lexer
  
 %{
+  StringBuffer string = new StringBuffer();
 
-    /**
-    * Return a new Symbol with the given token id, and with the current line and
-    * column numbers.
-    */
-    Symbol newSym(int tokenId) {
-        return new Symbol(tokenId, yyline, yycolumn);
-    }
-
-    /**
-    * Return a new Symbol with the given token id, the current line and column
-    * numbers, and the given token value.  The value is used for tokens such as
-    * identifiers and numbers.
-    */
-    Symbol newSym(int tokenId, Object value) {
-        return new Symbol(tokenId, yyline, yycolumn, value);
-    }
-
+  private Symbol symbol(int type) {
+    return new Symbol(type, yyline, yycolumn);
+  }
+  private Symbol symbol(int type, Object value) {
+    return new Symbol(type, yyline, yycolumn, value);
+  }
 %}
 
-
-/*-*
- * PATTERN DEFINITIONS:
- */
 
 tab             = \\t
 newline		    = \\n
@@ -47,27 +30,40 @@ id              = {letter}({letter}|{digit})*
 intlit	        = {digit}+
 inlinecomment   = {slash}{slash}.*\n
 whitespace      = [ \n\r\t]
-// comment_text    = ([^*/\n]|[^*\n]"/"[^*\n]|[^/\n]"*"[^/\n]|"*"[^/\n]|"/"[^*\n])+
-
-
 
 %%
 /**
  * LEXICAL RULES:
  */
-read                { return newSym(sym.READ, "read"); }
-print		        { return newSym(sym.PRINT, "print"); }
-if		            { return newSym(sym.IF, "if"); }
+class               { return symbol(sym.CLASS, "class"); }
+final               { return symbol(sym.FINAL, "final"); }
+void                { return symbol(sym.VOID, "void"); }
 
-"*"                 { return newSym(sym.MULT, "*"); }
-"+"                 { return newSym(sym.PLUS, "+"); }
-"-"                 { return newSym(sym.MINUS, "-"); }
-"/"                 { return newSym(sym.DIVIDE, "/"); }
-"="                 { return newSym(sym.ASSN, "="); }
-";"                 { return newSym(sym.SEMI, ";"); }
-var		            { return newSym(sym.VAR, "var"); }
-{id}                { return newSym(sym.ID, yytext()); }
-{intlit}            { return newSym(sym.INTLIT, new Integer(yytext())); }
+int                 { return symbol(sym.INT, "int"); }
+char                { return symbol(sym.CHAR, "char"); }
+bool                { return symbol(sym.BOOL, "bool"); }
+float               { return symbol(sym.FLOAT, "float"); }
+
+if		            { return symbol(sym.IF, "if"); }
+else		        { return symbol(sym.ELSE, "else"); }
+while		        { return symbol(sym.WHILE, "while"); }
+read		        { return symbol(sym.READ, "read"); }
+print		        { return symbol(sym.PRINT, "print"); }
+printline		    { return symbol(sym.PRINTLN, "println"); }
+return		        { return symbol(sym.RETURN, "return"); }
+
+read                { return symbol(sym.READ, "read"); }
+print		        { return symbol(sym.PRINT, "print"); }
+
+"*"                 { return symbol(sym.MULT, "*"); }
+"+"                 { return symbol(sym.PLUS, "+"); }
+"-"                 { return symbol(sym.MINUS, "-"); }
+"/"                 { return symbol(sym.DIVIDE, "/"); }
+"="                 { return symbol(sym.ASSN, "="); }
+";"                 { return symbol(sym.SEMI, ";"); }
+var		            { return symbol(sym.VAR, "var"); }
+{id}                { return symbol(sym.ID, yytext()); }
+{intlit}            { return symbol(sym.INTLIT, new Integer(yytext())); }
 {inlinecomment}     { /* For this stand-alone lexer, print out comments. */}
 {whitespace}        { /* Ignore whitespace. */ }
 // .                   { System.out.println("Illegal char, '" + yytext() + "' line: " + yyline + ", column: " + yychar); } 
