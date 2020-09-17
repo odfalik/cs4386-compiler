@@ -1,1 +1,4 @@
-Token #2	class	(0, 0)
+TYPE    LN, COL      VALUE     
+#44      1, 0        hello     
+#44      1, 6        world     
+#22      1, 11       ;         
