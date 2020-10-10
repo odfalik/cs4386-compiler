@@ -1,7 +1,7 @@
 import java_cup.runtime.*;
 
 terminal        CLASS, FINAL, VOID;
-terminal        INT, CHAR, BOOL, FLOAT;
+terminal String INT, CHAR, BOOL, FLOAT;
 terminal        IF, ELSE, WHILE, READ, PRINT, PRINTLN, RETURN;
 terminal        PAREN_O, PAREN_C, BRACKET_O, BRACKET_C, CURLY_BRACKET_O, CURLY_BRACKET_C;
 terminal        SEMI, COMMA, QUESTION, COLON;
@@ -11,9 +11,9 @@ terminal        INC, DEC;
 terminal        TRUE, FALSE;
 terminal String ID;
 terminal int    INTLIT;
-terminal char   CHARLIT;
+terminal double FLOATLIT;
+terminal String CHARLIT;
 terminal String STRLIT;
-terminal float  FLOATLIT;
 
 non terminal dummy;
 dummy ::= ;

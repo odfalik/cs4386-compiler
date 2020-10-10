@@ -37,81 +37,78 @@ comment             = \\\\.*((\r\n)|\n)
 multilinecomment    = \\\*~\*\\
 whitespace          = [ \n\r\t]
 
-%state  STRING
-
 
 %%
 
 
-<YYINITIAL> {
+class               { return symbol(sym.CLASS); }
+final               { return symbol(sym.FINAL); }
+void                { return symbol(sym.VOID); }
 
-  class               { return symbol(sym.CLASS); }
-  final               { return symbol(sym.FINAL); }
-  void                { return symbol(sym.VOID); }
+int                 { return symbol(sym.INT); }
+char                { return symbol(sym.CHAR); }
+bool                { return symbol(sym.BOOL); }
+float               { return symbol(sym.FLOAT); }
 
-  int                 { return symbol(sym.INT); }
-  char                { return symbol(sym.CHAR); }
-  bool                { return symbol(sym.BOOL); }
-  float               { return symbol(sym.FLOAT); }
+if		              { return symbol(sym.IF); }
+else		            { return symbol(sym.ELSE); }
+while		            { return symbol(sym.WHILE); }
+read		            { return symbol(sym.READ); }
+print		            { return symbol(sym.PRINT); }
+printline		        { return symbol(sym.PRINTLN); }
+return		          { return symbol(sym.RETURN); }
 
-  if		              { return symbol(sym.IF); }
-  else		            { return symbol(sym.ELSE); }
-  while		            { return symbol(sym.WHILE); }
-  read		            { return symbol(sym.READ); }
-  print		            { return symbol(sym.PRINT); }
-  printline		        { return symbol(sym.PRINTLN); }
-  return		          { return symbol(sym.RETURN); }
+"("                 { return symbol(sym.PAREN_O); }
+")"                 { return symbol(sym.PAREN_C); }
+"["                 { return symbol(sym.BRACKET_O); }
+"]"                 { return symbol(sym.BRACKET_C); }
+"{"                 { return symbol(sym.CURLY_BRACKET_O); }
+"}"                 { return symbol(sym.CURLY_BRACKET_C); }
 
-  "("                 { return symbol(sym.PAREN_O); }
-  ")"                 { return symbol(sym.PAREN_C); }
-  "["                 { return symbol(sym.BRACKET_O); }
-  "]"                 { return symbol(sym.BRACKET_C); }
-  "{"                 { return symbol(sym.CURLY_BRACKET_O); }
-  "}"                 { return symbol(sym.CURLY_BRACKET_C); }
+";"                 { return symbol(sym.SEMI); }
+","                 { return symbol(sym.COMMA); }
+"?"                 { return symbol(sym.QUESTION); }
+":"                 { return symbol(sym.COLON); }
 
-  ";"                 { return symbol(sym.SEMI); }
-  ","                 { return symbol(sym.COMMA); }
-  "?"                 { return symbol(sym.QUESTION); }
-  ":"                 { return symbol(sym.COLON); }
+"="                 { return symbol(sym.ASSN); }
 
-  "="                 { return symbol(sym.ASSN); }
+"*"                 { return symbol(sym.MULT); }
+"/"                 { return symbol(sym.DIVIDE); }
+"+"                 { return symbol(sym.PLUS); }
+"-"                 { return symbol(sym.MINUS); }
+"<"                 { return symbol(sym.LT); }
+">"                 { return symbol(sym.GT); }
+"<="                { return symbol(sym.LTE); }
+">="                { return symbol(sym.GTE); }
+"=="                { return symbol(sym.EQ); }
+"<>"                { return symbol(sym.NEQ); }
+"||"                { return symbol(sym.OR); }
+"&&"                { return symbol(sym.AND); }
+"~"                 { return symbol(sym.NOT); }
 
-  "*"                 { return symbol(sym.MULT); }
-  "/"                 { return symbol(sym.DIVIDE); }
-  "+"                 { return symbol(sym.PLUS); }
-  "-"                 { return symbol(sym.MINUS); }
-  "<"                 { return symbol(sym.LT); }
-  ">"                 { return symbol(sym.GT); }
-  "<="                { return symbol(sym.LTE); }
-  ">="                { return symbol(sym.GTE); }
-  "=="                { return symbol(sym.EQ); }
-  "<>"                { return symbol(sym.NEQ); }
-  "||"                { return symbol(sym.OR); }
-  "&&"                { return symbol(sym.AND); }
-  "~"                 { return symbol(sym.NOT); }
+"++"                { return symbol(sym.INC); }
+"--"                { return symbol(sym.DEC); }
 
-  "++"                { return symbol(sym.INC); }
-  "--"                { return symbol(sym.DEC); }
+true                { return symbol(sym.TRUE); }
+false               { return symbol(sym.FALSE); }
 
-  true                { return symbol(sym.TRUE); }
-  false               { return symbol(sym.FALSE); }
+{id}                { return symbol(sym.ID); }
+{digit}+            { return symbol(sym.INTLIT, new Integer(yytext())); }
 
-  {id}                { return symbol(sym.ID); }
-  {digit}+            { return symbol(sym.INTLIT); }
+\'[^\'\\]\'         { return symbol(sym.CHARLIT); }
+\"                  { yybegin(STRING); }
+{digit}+\.{digit}+  { return symbol(sym.FLOATLIT, new Double(yytext())); }
 
-  \'[^\'\\]\'         { return symbol(sym.CHARLIT); }
-  \"                  { yybegin(STRING); }
-  {digit}+\.{digit}+  { return symbol(sym.FLOATLIT); }
+{comment}           |
+{multilinecomment}  { }
+{whitespace}+       { }
 
-  {comment}           |
-  {multilinecomment}  { }
-  {whitespace}+       { }
+[^]                 { illegal(yyline, yychar); }
 
-  [^]                 { illegal(yyline, yychar); } 
-}
-
-<STRING> {
-  \"                  { yybegin(YYINITIAL); return symbol(sym.STRLIT, "String"); }
-  [^\r\n\t\"]+        { }
-  [^]                 { illegal(yyline, yychar); }
-}
+{charlit}           { return newSym(sym.CHARLIT, yytext()); }
+{stringlit}	        { return newSym(sym.STRINGLIT, yytext()); }
+{inlinecomment}     { /* For this stand-alone lexer, print out comments. */}
+{blockcomment}	    { /* For this stand-alone lexer, print out comments. */}
+{whitespace}        { /* Ignore whitespace. */ }
+.                   { System.out.println("Illegal char, '" + yytext() +
+                    "' line: " + yyline + ", column: " + yychar); } 
